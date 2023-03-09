@@ -62,7 +62,7 @@ def getnamedict():
 def main(args):
     namedict = []
     name = []
-    if len(args) > 0:
+    if len(args) > 1:
         name.append(args[1])
         name.append(args[2])
         namedict.append(name)
