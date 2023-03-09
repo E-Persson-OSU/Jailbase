@@ -1,6 +1,7 @@
 # .gitignore
 config.py
 .vscode
+names.csv
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

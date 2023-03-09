@@ -61,28 +61,24 @@ def getnamedict():
 
 def main(args):
     namedict = []
-    name = []
-    if len(args) > 1:
-        name.append(args[1])
-        name.append("")
-        namedict.append(name)
-    elif len(args) > 2:
-        name.append(args[1])
-        name.append(args[2])
-        namedict.append(name)
-    else:
-        namedict = getnamedict()
+    name = ["",""]
+    args.pop(0)
+    if len(args) == 2:
+        name[0] = (args[0])
+        name[1] = (args[1])
+    elif len(args) == 1:
+        name[0] = (args[0])
+    namedict.append(name)
 
     sourceidlist = getsourceids()
     bookinglist = []
     
     for sourceid in sourceidlist:
-        print("Now searching {}".format(sourceid))
-        for name in namedict:
-                record = searchjailbase(sourceid,name[0],name[1])
-                if len(record['records']) > 0:
-                    for booking in record['records']:
-                        bookinglist.append(booking)
+        print("Now searching {} for {}, {}".format(sourceid, name[0], name[1]))
+        record = searchjailbase(sourceid,name[0],name[1])
+        if len(record['records']) > 0:
+            for booking in record['records']:
+                bookinglist.append(booking)
     print(bookinglist)
 
 
