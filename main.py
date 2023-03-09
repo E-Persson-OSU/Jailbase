@@ -64,6 +64,10 @@ def main(args):
     name = []
     if len(args) > 1:
         name.append(args[1])
+        name.append("")
+        namedict.append(name)
+    elif len(args) > 2:
+        name.append(args[1])
         name.append(args[2])
         namedict.append(name)
     else:
