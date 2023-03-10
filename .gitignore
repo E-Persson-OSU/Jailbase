@@ -2,6 +2,7 @@
 config.py
 .vscode
 names.csv
+.ssh
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -132,6 +133,20 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+venv/
+
+*.pyc
+__pycache__/
+
+instance/
+
+.pytest_cache/
+.coverage
+htmlcov/
+
+dist/
+build/
+*.egg-info/
 
 # Spyder project settings
 .spyderproject
