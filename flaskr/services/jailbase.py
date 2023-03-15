@@ -2,9 +2,10 @@
 import http.client
 import json
 import csv
-import sys
+import time
 import config
 import random
+import services.db as db
 
 """global variables"""
 conn = http.client.HTTPSConnection("jailbase-jailbase.p.rapidapi.com")
@@ -61,12 +62,26 @@ def getrecent():
     sourceids = getsourceids()
     random_id = random.choice(sourceids)
     conn.request("GET", "/recent/?source_id={}".format(random_id), headers=headers)
-    res = conn.getresponse()
-    data = res.read()
-    data = data.decode("utf-8")
-    data = json.loads(data)
-    records = data["records"] 
+    attempts = 0
+    while True:
+        try:
+            res = conn.getresponse()
+            data = res.read()
+            data = data.decode("utf-8")
+            data = json.loads(data)
+            break   
+        except (json.decoder.JSONDecodeError, http.client.ResponseNotReady) :
+            print("Server error 500, trying again")
+            time.sleep(2)
+            attempts = attempts + 1
+            if attempts > 2:
+                data = db.getrecentdb()
+                break
+    
+    records = data["records"]
+    db.addrecentdb(records)
     return records
+
 
 def main(args):
     namedict = []
