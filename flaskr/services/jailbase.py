@@ -4,6 +4,7 @@ import json
 import csv
 import sys
 import config
+import random
 
 """global variables"""
 conn = http.client.HTTPSConnection("jailbase-jailbase.p.rapidapi.com")
@@ -39,14 +40,11 @@ def getsourceids():
     data = res.read()
     data = data.decode("utf-8")
     data = json.loads(data)
-    ohsourceids = []
+    sourceids = []
     records = data["records"]
     for record in records:
-        state = record["state_full"]
-        if state.lower() == "ohio":
-            ohsourceids.append(record["source_id"])
-            
-    return ohsourceids
+        sourceids.append(record["source_id"])        
+    return sourceids
 
 def getnamedict():
     name = []
@@ -58,6 +56,17 @@ def getnamedict():
             namedict.append(name)
     return namedict
 
+"""grab recent from random sourceid and """
+def getrecent():
+    sourceids = getsourceids()
+    random_id = random.choice(sourceids)
+    conn.request("GET", "/recent/?source_id={}".format(random_id), headers=headers)
+    res = conn.getresponse()
+    data = res.read()
+    data = data.decode("utf-8")
+    data = json.loads(data)
+    records = data["records"] 
+    return records
 
 def main(args):
     namedict = []
@@ -80,6 +89,3 @@ def main(args):
             for booking in record['records']:
                 bookinglist.append(booking)
     print(bookinglist)
-
-
-main(sys.argv)
