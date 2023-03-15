@@ -61,10 +61,10 @@ def getnamedict():
 def getrecent():
     sourceids = getsourceids()
     random_id = random.choice(sourceids)
-    conn.request("GET", "/recent/?source_id={}".format(random_id), headers=headers)
     attempts = 0
     while True:
         try:
+            conn.request("GET", "/recent/?source_id={}".format(random_id), headers=headers)
             res = conn.getresponse()
             data = res.read()
             data = data.decode("utf-8")
@@ -72,14 +72,15 @@ def getrecent():
             break   
         except (json.decoder.JSONDecodeError, http.client.ResponseNotReady) :
             print("Server error 500, trying again")
+            random_id = random.choice(sourceids)
             time.sleep(2)
             attempts = attempts + 1
             if attempts > 2:
-                data = db.getrecentdb()
+                random_id = "ia-tcso"
+                data = json.loads()
                 break
     
     records = data["records"]
-    db.addrecentdb(records)
     return records
 
 
