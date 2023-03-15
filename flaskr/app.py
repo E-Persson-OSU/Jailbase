@@ -2,14 +2,18 @@ from flask import Flask, render_template
 
 import services.jailbase as jb
 import services.db as db
-import os
-import threading
 import http.client as client
 import time
 
 
+
 """global variables"""
 app = Flask(__name__)
+
+@app.before_first_request
+def init():
+    db.init_db(app.root_path)
+    print("Initializing DB before first request...")
 
 @app.route('/')
 def index():
@@ -18,6 +22,7 @@ def index():
 @app.route('/jailbase')
 def jailbase():
     records = jb.getrecent()
+    db.updatesourceids(jb.getsourceids())
     return render_template('jailbase.html', records=records)
 
 @app.route('/about')

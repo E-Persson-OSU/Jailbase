@@ -1,4 +1,5 @@
 DROP TABLE IF EXISTS recents;
+DROP TABLE IF EXISTS sourceids;
 
 CREATE TABLE recents (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -6,3 +7,8 @@ CREATE TABLE recents (
   bookdate TEXT,
   imglink TEXT
 );
+
+CREATE TABLE sourceids (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  sourceid TEXT
+)

@@ -5,7 +5,7 @@ from flask import current_app
 import os
 
 """global variables"""
-rel_dir = "/static/db/schema.sql"
+rel_dir = "\static\db\schema.sql"
 
 
 def get_db():
@@ -14,16 +14,25 @@ def get_db():
 
     return db
 
-"""def init_db(absolute_dir):
+""" def init_db():
     db = get_db()
-    abs_file_path = os.path.join(absolute_dir,rel_dir)
+    Instead of using a schema, just make one db and table
+    cur = db.cursor()
+    cur.execute('DROP TABLE if EXISTS recents')
+    cur.execute('DROP TABLE if EXISTS sourceids')
+    cur.execute('CREATE TABLE recents (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, name TEXT, bookdate TEXT, mugshot TEXT)')
+    cur.execute('CREATE TABLE sourceids (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, sourceid TEXT)')
+    db.commit()
+    db.close() """
+
+def init_db(absolute_dir):
+    db = get_db()
+    abs_file_path = absolute_dir + rel_dir
     print(abs_file_path)
-    with current_app.open_resource(rel_dir) as f:
+    with current_app.open_resource(abs_file_path) as f:
         db.executescript(f.read().decode('utf8'))
     db.commit()
-    db.close()"""
-
-
+    db.close()
 
 
 
@@ -51,7 +60,26 @@ def getrecentdb():
     data = {"records": records}
     return data
     
+def updatesourceids(sourceids):
+    db = get_db()
+    cursor = db.cursor()
+    table_name = 'sourceids'
 
+    for sourceid in sourceids:
+        print(sourceid)
+        """sqlite3 does not like dashes. need to remove dash from string to store, add dash back when I need to take the sourceids out again"""
+        select_query = f"SELECT * FROM {table_name} WHERE sourceid = {sourceid}"
+        cursor.execute(select_query)
+        existing_row = cursor.fetchone()
+
+        if existing_row is None:
+            insert_query = f"INSERT INTO {table_name} (id, sourceid) VALUES (?, ?)"
+            cursor.execute(insert_query, (None, sourceid))
+            db.commit()
+            print("New SourceID Added\n")
+        else:
+            print("SourceID already exists\n")
+    db.close()
 
     
 
