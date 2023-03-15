@@ -2,8 +2,10 @@
 import http.client
 import json
 import csv
-import sys
+import time
 import config
+import random
+import services.db as db
 
 """global variables"""
 conn = http.client.HTTPSConnection("jailbase-jailbase.p.rapidapi.com")
@@ -39,14 +41,11 @@ def getsourceids():
     data = res.read()
     data = data.decode("utf-8")
     data = json.loads(data)
-    ohsourceids = []
+    sourceids = []
     records = data["records"]
     for record in records:
-        state = record["state_full"]
-        if state.lower() == "ohio":
-            ohsourceids.append(record["source_id"])
-            
-    return ohsourceids
+        sourceids.append(record["source_id"])        
+    return sourceids
 
 def getnamedict():
     name = []
@@ -57,6 +56,32 @@ def getnamedict():
             name = [row['last_name'], row['first_name']]
             namedict.append(name)
     return namedict
+
+"""grab recent from random sourceid and """
+def getrecent():
+    sourceids = getsourceids()
+    random_id = random.choice(sourceids)
+    attempts = 0
+    while True:
+        try:
+            conn.request("GET", "/recent/?source_id={}".format(random_id), headers=headers)
+            res = conn.getresponse()
+            data = res.read()
+            data = data.decode("utf-8")
+            data = json.loads(data)
+            break   
+        except (json.decoder.JSONDecodeError, http.client.ResponseNotReady) :
+            print("Server error 500, trying again")
+            random_id = random.choice(sourceids)
+            time.sleep(2)
+            attempts = attempts + 1
+            if attempts > 2:
+                random_id = "ia-tcso"
+                data = json.loads()
+                break
+    
+    records = data["records"]
+    return records
 
 
 def main(args):
@@ -80,6 +105,3 @@ def main(args):
             for booking in record['records']:
                 bookinglist.append(booking)
     print(bookinglist)
-
-
-main(sys.argv)
